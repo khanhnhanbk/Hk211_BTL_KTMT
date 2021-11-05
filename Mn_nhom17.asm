@@ -2,11 +2,12 @@
 		.data
 #variable
 input:		.space		60
-filename:	.asciiz		"init15.bin"
+filename:	.asciiz		"int15.bin"
 #promt
 prompt_print:	.asciiz		"Du lieu hien tai la: "
 space:		.asciiz		" "
 endl:		.asciiz		"\n"
+promt_error:	.asciiz		"Khong the mo file"
 #Code segment
 		.text
 #main function
@@ -20,6 +21,8 @@ main:
 	addi	$a1,	$zero,	0
 	addi	$a2,	$zero,	0
 	syscall
+	slt	$t0,	$v0,	$zero
+	bne	$t0,	$zero,	error
 	add	$s6,	$v0,	$zero
 	# read file
 	addi	$v0,	$zero,	14	
@@ -37,11 +40,17 @@ main:
 	la	$t1, 	input
 	la	$a1,	($t1)
 	la	$a2,	60($t1)
-	jal	mergeSort
+	#jal	mergeSort
 #exit
 	addi	$v0,	$zero,	10
 	syscall
-	
+#error
+error:
+	la	$a0,	promt_error
+	addi	$v0,	$zero,	4
+	syscall
+	addi	$v0,	$zero,	10
+	syscall
 	
 #print function
 print:
