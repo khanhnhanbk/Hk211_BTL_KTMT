@@ -8,6 +8,7 @@ filename:		.asciiz		"INT15.bin"
 prompt_print:	.asciiz		"Du lieu hien tai la: "
 space:		.asciiz		" "
 endl:		.asciiz		"\n"
+promt_error:	.asciiz		"Khong the mo file"
 #Code segment
 		.text
 #main function
@@ -21,6 +22,8 @@ main:
 	addi	$a1,	$zero,	0
 	addi	$a2,	$zero,	0
 	syscall
+	slt	$t0,	$v0,	$zero
+	bne	$t0,	$zero,	error
 	add	$s6,	$v0,	$zero
 	# read file
 	addi	$v0,	$zero,	14	
@@ -46,7 +49,13 @@ main:
 #exit
 	addi	$v0,	$zero,	10
 	syscall
-	
+#error
+error:
+	la	$a0,	promt_error
+	addi	$v0,	$zero,	4
+	syscall
+	addi	$v0,	$zero,	10
+	syscall
 	
 #print function
 print:
