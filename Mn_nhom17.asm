@@ -39,13 +39,10 @@ main:
 	jal	print
 #process
 	la	$t1, 	input
-	move	$a0,	$t1
-	la	$a1,	($t1)
-	la	$a2,	24($t1)
-	la	$a3,	12($t1)
-	
-	jal	merge
-	jal	print
+	addi	$a1,	$t1,	0
+	addi	$a2,	$t1,	56
+	addi 	$a3,	$t1,	32
+	jal	mergeSort
 #exit
 	addi	$v0,	$zero,	10
 	syscall
@@ -84,95 +81,153 @@ end_for:
 	
 	
 #mergeSort function
+mergeSort:
+#a0 = address input, a1 = address left, a2 = address right
+	#if	a1 >= a2	return
+	slt	$t0,	$a1,	$a2
+	beq	$t0,	$zero,	end_mergeSort
+	#mid = (left + right)/2
+	sub	$t0,	$a2,	$a1
+	sra	$t0,	$t0,	3
+	sll	$t0,	$t0,	2
+	add	$a3,	$a1,	$t0
+	
+	#call mergeSort(left, mid)
+	    #store paramenter
+	addi    $sp,	$sp,	-16
+	sw	$a1, 	0($sp)
+	sw	$a2, 	4($sp)		
+	sw	$a3, 	8($sp)
+	sw	$ra, 	12($sp)
+	    #call function
+	add	$a2,	$zero,	$a3
+	jal	mergeSort
+	    #load paramenter
+	lw	$a1, 	0($sp)
+	lw	$a2, 	4($sp)
+	lw	$a3, 	8($sp)
+	lw	$ra, 	12($sp)
+	addi	$sp, 	$sp, 	16
+	#call mergeSort(mid + 1, right)
+	    ##store paramenter
+	addi    $sp,	$sp,	-16
+	sw	$a1, 	0($sp)
+	sw	$a2, 	4($sp)		
+	sw	$a3, 	8($sp)
+	sw	$ra, 	12($sp)
+	    #call function
+	add	$a1,	$zero,	$a3
+	addi	$a1,	$a1,	4
+	jal	mergeSort
+	     #load paramenter
+	lw	$a1, 	0($sp)
+	lw	$a2, 	4($sp)
+	lw	$a3, 	8($sp)
+	lw	$ra, 	12($sp)
+	addi	$sp, 	$sp, 	16
+	#call merge	
+	#store paramenter
+	addi    $sp,	$sp,	-16
+	sw	$a1, 	0($sp)
+	sw	$a2, 	4($sp)		
+	sw	$a3, 	8($sp)
+	sw	$ra, 	12($sp)
+	    #call function
+	addi	$a3,	$a3,	4
+	jal	merge
+	    #load paramenter
+	    #load paramenter
+	lw	$a1, 	0($sp)
+	lw	$a2, 	4($sp)
+	lw	$a3, 	8($sp)
+	lw	$ra, 	12($sp)
+	addi	$sp, 	$sp, 	16
+end_mergeSort:
 	jr	$ra
 #mergeFunction
 merge:
-    #a0 = address input, a1 = address left, a2 = address right,a3 = address mid
+    #a1 = address left, a2 = address right, a3 = address mid
 	# store paramenter
-	addi   $sp,$sp,-20
-	sw	$a0, 0($sp)
-	sw	$a1, 4($sp)
-	sw	$a2, 8($sp)
-	sw	$a3, 12($sp)
-	sw	$ra, 20($sp)
+	addi    $sp,	$sp,	-4
+	sw	$a1, 	0($sp)
 	#t0 = aux
-	la	$t0, aux
-	# while (left < mid && mid < right) so sanh
+	la	$t0, 	aux
+	# while (left < mid && mid <= right) so sanh
 	# t4 = mid cux
-	move	$t4, $a3
+	add	$t4, 	$zero,	$a3
 while1:
     # condition
-	slt	$t1, $a1, $t4
-	slt	$t2, $a3, $a2
-	and	$t1, $t1, $t2
-	
-	beqz	$t1, endWhile1 
-    # body while
+	slt	$t1, 	$a1, 	$t4
+	beqz	$t1,	endWhile1
+	slt	$t1, 	$a2, 	$a3
+	bnez	$t1, 	endWhile1 
+    # body while	
         #t1 = *left, t2 = *mid, 
-    	lw	$t1, 0($a1)
-    	lw	$t2, 0($a3)
+    	lw	$t1, 	0($a1)
+    	lw	$t2, 	0($a3)
         # if (t1 < t2) *aux = t1 else *aux = t2
-        	slt	$t3, $t1, $t2
-        	beqz	$t3, elseIf	
+        	slt	$t3, 	$t1, 	$t2
+        	beqz	$t3, 	elseIf	
         # then
-        	sw	$t1, 0($t0)
-        	addi	$a1, $a1, 4
+        	sw	$t1, 	0($t0)
+        	addi	$a1,	$a1, 	4
         	j	endIf
         # else
 elseIf:
-	sw	$t2, 0($t0)
-	addi	$a3, $a3, 4
+		sw	$t2, 	0($t0)
+		addi	$a3, 	$a3, 	4
         # endif
 endIf:
-	addi	$t0, $t0, 4
+	addi	$t0, 	$t0, 	4
 	j	while1
     # endWhile
 endWhile1:	
 # 	while (right) chua duyet
 whileRight:
-	slt	$t1, $a3, $a2
-	beqz	$t1, endWhileRight
+	slt	$t1, 	$a2, 	$a3
+	bnez	$t1, 	endWhileRight
     # body while	
-	lw	$t1, 0($a3)
-	sw	$t1, 0($t0)
-	addi	$a3, $a3, 4
-	addi	$t0, $t0, 4
+	lw	$t1,	0($a3)
+	sw	$t1, 	0($t0)
+	addi	$a3, 	$a3, 	4
+	addi	$t0, 	$t0, 	4
 	j 	whileRight
     #endwhileRight
 endWhileRight:
 #	while (left) chua duyet het	
 whileLeft:
-	slt	$t1, $a1, $t4
-	beqz	$t1, endWhileLeft
+	slt	$t1, 	$a1, 	$t4
+	beqz	$t1, 	endWhileLeft
     # body while	
-	lw	$t1, 0($a1)
-	sw	$t1, 0($t0)
-	addi	$a1, $a1, 4
-	addi	$t0, $t0, 4
+	lw	$t1, 	0($a1)
+	sw	$t1, 	0($t0)
+	addi	$a1, 	$a1, 	4
+	addi	$t0, 	$t0, 	4
 	j 	whileLeft
     #endwhileRight
 endWhileLeft:
     # copy from aux to input
-    	lw	$t1, 0($sp)
-	la	$t0, aux
-    # while t1 < right
+    	lw	$t1, 	0($sp)
+	la	$t0, 	aux
+    # while left <= right
 whileCopy:
-	slt	$t2, $t1, $a2
-	beqz	$t2, endWhileCopy
+	slt	$t2, 	$a2, 	$t1
+	bnez	$t2, 	endWhileCopy
 bodyWhileCopy:
-	lw	$t2, 0($t0)
-	sw	$t2, 0($t1)
-	addi	$t0, $t0, 4
-	addi	$t1, $t1, 4
+	lw	$t2, 	0($t0)
+	sw	$t2, 	0($t1)
+	addi	$t0, 	$t0, 	4
+	addi	$t1, 	$t1, 	4
 	j	whileCopy
 endWhileCopy:
 	
 endMerge:
-	lw	$a0, 0($sp)
-	lw	$a1, 4($sp)
-	lw	$a2, 8($sp)
-	lw	$a3, 12($sp)
-	lw	$ra, 20($sp)
-	addi	$sp, $sp, 20
+	lw	$a1, 	0($sp)
+	addi	$sp, 	$sp, 	4
+	addi    $sp,	$sp,	-4
+	sw	$ra, 	0($sp)
+	jal	print
+	lw	$ra, 	0($sp)
+	addi	$sp, 	$sp, 	4
 	jr	$ra
 	

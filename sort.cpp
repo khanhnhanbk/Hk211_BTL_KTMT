@@ -56,7 +56,7 @@ void mergeSort(int a[], int l, int r)
 // test
 int main()
 {
-    int a[] = {1, 2, 3, 4, 20, 6, 7, 8, 9, 10};
+    int a[] = {1 ,3 ,5, 2, 4, 6, 100 ,2 ,4, 6, 8, 14, 20 ,30, 40};
     int n = sizeof(a) / sizeof(a[0]);
     mergeSort(a, 0, n - 1);
     for (int i = 0; i < n; i++)

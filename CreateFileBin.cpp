@@ -9,7 +9,7 @@ int main()
     string filename = "INT15.BIN";
     ofstream ofs;
     ofs.open(filename, ios::out | ios::binary | ios::trunc);
-    int data[15] = {1,3,5,2,4,6,100,2,4,6,8,14,20,30,40};
+    int data[15] = {24,17,59,12,64,195,206,275,187,269,179,255,829,163,27};
     // for (int i = 0; i < 15; i++)
     // {
     //     // randome data value
