@@ -224,7 +224,7 @@ endWhileCopy:
 endMerge:
 	lw	$a1, 	0($sp)
 	addi	$sp, 	$sp, 	4
-	addi    $sp,	$sp,	-4
+	addi    	$sp,	$sp,	-4
 	sw	$ra, 	0($sp)
 	jal	print
 	lw	$ra, 	0($sp)

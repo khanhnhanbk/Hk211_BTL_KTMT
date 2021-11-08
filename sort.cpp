@@ -1,6 +1,13 @@
 #include <iostream>
-
+#include <fstream>
 using namespace std;
+
+void printArray(int a[], int size)
+{
+    for (int i = 0; i < size; i++)
+        cout << a[i] << " ";
+    cout << endl;
+}
 // implement merge sort
 void merge(int a[], int l, int m, int r)
 {
@@ -51,15 +58,21 @@ void mergeSort(int a[], int l, int r)
         mergeSort(a, l, m);
         mergeSort(a, m + 1, r);
         merge(a, l, m, r);
+        printArray(a, 15);
     }
 }
 // test
 int main()
 {
-    int a[] = {1 ,3 ,5, 2, 4, 6, 100 ,2 ,4, 6, 8, 14, 20 ,30, 40};
+    // read file INT15.bin
+    ifstream in("INT15.bin", ios::in | ios::binary);
+    int a[15];
+    in.read((char *)a, sizeof(int) * 15);
+    in.close();
+
+    printArray(a, 15);
+
     int n = sizeof(a) / sizeof(a[0]);
     mergeSort(a, 0, n - 1);
-    for (int i = 0; i < n; i++)
-        cout << a[i] << " ";
     return 0;
 }
